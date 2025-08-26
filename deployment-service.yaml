@@ -15,7 +15,7 @@ spec:
       serviceAccountName: jenkins-sa
       containers:
         - name: boardgame
-          image: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}
+          image: $image
           imagePullPolicy: Always
           ports:
             - containerPort: 9000
