@@ -12,14 +12,13 @@ spec:
       labels:
         app: boardgame
     spec:
+      serviceAccountName: jenkins-sa
       containers:
         - name: boardgame
-          image: 599626541588.dkr.ecr.ap-south-1.amazonaws.com/workshop/demo:latest # <-- update if using ECR
+          image: ${ECR_REGISTRY}/${ECR_REPO}:${IMAGE_TAG}
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
-      imagePullSecrets:                     # <-- moved to the pod spec
-        - name: ecr-registry-secret
+            - containerPort: 9000
 ---
 apiVersion: v1
 kind: Service
@@ -33,42 +32,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 8080
+      targetPort: 9000
   type: LoadBalancer
-
-# apiVersion: apps/v1
-# kind: Deployment # Kubernetes resource kind we are creating
-# metadata:
-#   name: boardgame-deployment
-# spec:
-#   selector:
-#     matchLabels:
-#       app: boardgame
-#   replicas: 2 # Number of replicas that will be created for this deployment
-#   template:
-#     metadata:
-#       labels:
-#         app: boardgame
-#     spec:
-#       containers:
-#         - name: boardgame
-#           image: venkatbs/workshop:latest # Image that will be used to containers in the cluster
-#           imagePullPolicy: Always
-#           ports:
-#             - containerPort: 8080 # The port that the container is running on in the cluster
-
-
-# ---
-
-# apiVersion: v1 # Kubernetes API version
-# kind: Service # Kubernetes resource kind we are creating
-# metadata: # Metadata of the resource kind we are creating
-#   name: boardgame-ssvc
-# spec:
-#   selector:
-#     app: boardgame
-#   ports:
-#     - protocol: "TCP"
-#       port: 80
-#       targetPort: 8080 
-#   type: LoadBalancer # type of the service.
