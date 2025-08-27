@@ -1,5 +1,5 @@
 FROM openjdk:21-jdk-slim
-
+#from
 EXPOSE 8080
 
 ENV APP_HOME=/usr/src/app
