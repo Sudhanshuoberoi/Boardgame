@@ -117,10 +117,12 @@ pipeline {
         stage('Update Image Tag') {
             steps {
                 script {
-                    sh 'export imagename=$ECR_REGISTRY/$ECR_REPO:$BUILD_NUMBER'
-                    sh 'echo $imagename'
-                    sh 'envsubst < deployment-service.yaml > deployment.yaml'
-                    sh 'cat deployment.yaml'
+                    sh '''
+                       sed -e "s|ECR_REGISTRY|$ECR_REGISTRY|g" \
+                           -e "s|ECR_REPO|$IMAGE_TECR_REPO|g" \
+                           -e "s|BUILD_ID|$BUILD_NUMBER|g" \
+                           deployment-service.yaml > deployment.yaml
+                    '''
                 }
             }
         }
@@ -129,6 +131,7 @@ pipeline {
             steps {
                 script {
                     // Update kubeconfig
+                    sh 'cat deployment.yaml'
                     sh "aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER"
                     sh 'kubectl apply -f deployment.yaml'
                 }
