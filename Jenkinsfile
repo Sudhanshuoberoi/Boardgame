@@ -119,7 +119,7 @@ pipeline {
                 script {
                     sh '''
                        sed -e "s|ECR_REGISTRY|$ECR_REGISTRY|g" \
-                           -e "s|ECR_REPO|$IMAGE_TECR_REPO|g" \
+                           -e "s|ECR_REPO|$ECR_REPO|g" \
                            -e "s|BUILD_ID|$BUILD_NUMBER|g" \
                            deployment-service.yaml > deployment.yaml
                     '''
