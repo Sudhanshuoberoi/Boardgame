@@ -15,7 +15,7 @@ spec:
       serviceAccountName: jenkins-sa
       containers:
         - name: boardgame
-          image: 623595292733.dkr.ecr.ap-south-1.amazonaws.com/workshop/kubernetes:latest
+          image: $imagename
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

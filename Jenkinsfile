@@ -62,7 +62,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh """
-                  docker build -t $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG .
+                  docker build -t $ECR_REGISTRY/$ECR_REPO:$BUILD_NUMBER .
                 """
             }
         }
@@ -70,7 +70,7 @@ pipeline {
         stage('Trivy Scan') {
             steps {
                 sh '''
-                   trivy image --format json --output trivy-report-$BUILD_NUMBER.json $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG
+                   trivy image --format json --output trivy-report-$BUILD_NUMBER.json $ECR_REGISTRY/$ECR_REPO:$BUILD_NUMBER
                 '''
             }
         }
@@ -110,7 +110,16 @@ pipeline {
 
         stage('Push to ECR') {
             steps {
-                sh 'docker push $ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG'
+                sh 'docker push $ECR_REGISTRY/$ECR_REPO:$BUILD_NUMBER'
+            }
+        }
+
+        stage('Update Image Tag') {
+            steps {
+                script {
+                    sh 'export imagename=$ECR_REGISTRY/$ECR_REPO:$BUILD_NUMBER'
+                    sh 'envsubst < deployment-service.yaml > deployment.yaml'
+                }
             }
         }
 
@@ -119,7 +128,7 @@ pipeline {
                 script {
                     // Update kubeconfig
                     sh "aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER"
-                    sh 'kubectl apply -f deployment-service.yaml'
+                    sh 'kubectl apply -f deployment.yaml'
                 }
             }
         }
