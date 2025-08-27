@@ -118,7 +118,9 @@ pipeline {
             steps {
                 script {
                     sh 'export imagename=$ECR_REGISTRY/$ECR_REPO:$BUILD_NUMBER'
+                    sh 'echo $imagename'
                     sh 'envsubst < deployment-service.yaml > deployment.yaml'
+                    sh 'cat deployment.yaml'
                 }
             }
         }
